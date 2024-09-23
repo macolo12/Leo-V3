@@ -85,8 +85,4 @@ If pip is not installed, you can follow this guide to manually install pip
 If everything works You can open the app.py File
 
 Have fun With  
-                   __         ______     ______    
-                  /\ \       /\  ___\   /\  __ \   
-                  \ \ \____  \ \  __\   \ \ \/\ \  
-                   \ \_____\  \ \_____\  \ \_____\ 
-                    \/_____/   \/_____/   \/_____/ 
+**Leo**
