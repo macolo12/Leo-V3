@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leo Assistant</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #000000; /* Black background */
+            color: #00ced1; /* Cyan glowing font */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.8); /* Black background */
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.7); /* Green glowing outline */
+            border: 1px solid rgba(0, 255, 0, 0.4); /* Slight green outline */
+            display: flex;
+            flex-direction: row; /* Side panel on the left */
+        }
+
+        .side-panel {
+            width: 200px;
+            background-color: #000000; /* Black panel */
+            border-radius: 15px;
+            border: 1px solid rgba(0, 255, 0, 0.7); /* Glowing green outline */
+            padding: 20px;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
+            margin-right: 20px;
+            overflow-y: auto; /* Allow scrolling if there are many chats */
+        }
+
+        .side-panel h2 {
+            color: #ffffff; /* White text */
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .side-panel button {
+            width: 100%;
+            padding: 10px;
+            background-color: #000000;
+            color: #ffffff; /* White font for better visibility */
+            border: 1px solid #00ff00; /* Green border */
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .side-panel button:hover {
+            background-color: #00ff00; /* Green on hover */
+            color: #000000;
+        }
+
+        .chat-panel {
+            flex-grow: 1;
+            background: rgba(0, 0, 0, 0.8); /* Dark background for chat panel */
+            padding: 20px;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .chat-panel h1 {
+            text-align: center;
+            color: #00ff00; /* Glowing green header */
+            text-shadow: 0 0 15px rgba(0, 255, 0, 0.7);
+            margin-bottom: 20px;
+        }
+
+        #chatbox {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            height: 400px;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 20px rgba(0, 255, 0, 0.5); /* Green inset shadow */
+        }
+
+        #chatbox p {
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(0, 255, 0, 0.4); /* Green shadow for messages */
+        }
+
+        #chatbox .leo {
+            text-align: left;
+            color: #00ff00; /* Leo's text in green */
+        }
+        #leo-image {
+           width: 50px; /* Adjust size as needed */
+           height: auto;
+           position: absolute; /* Absolute positioning */
+           right: 10px; /* Move it further right */
+           top: 10px; /* Adjust vertical position */
+        }
+
+
+
+        #chatbox .user {
+            text-align: right;
+            background: rgba(0, 255, 204, 0.3); /* Cyan background for user messages */
+        }
+
+        #user-input {
+            width: calc(100% - 140px);
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            outline: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: #00ced1; /* Cyan font */
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        button {
+            padding: 10px;
+            background: linear-gradient(45deg, #00ff99, #00bfff);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+        }
+
+        button:hover {
+            background: linear-gradient(45deg, #00bfff, #00ff99);
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .clear-btn {
+            background: linear-gradient(45deg, #ff4c4c, #ff6f6f);
+        }
+
+        .clear-btn:hover {
+            background: linear-gradient(45deg, #ff6f6f, #ff4c4c);
+        }
+
+        .chat-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .chat-list-item {
+            background-color: #111111;
+            border: 1px solid rgba(0, 255, 0, 0.7);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .chat-list-item:hover {
+            background-color: #00ff00;
+            color: #000000;
+        }
+
+        /* Context Menu Styles */
+        .context-menu {
+            display: none;
+            position: absolute;
+            background: #000000;
+            border: 1px solid #00ff00;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+            z-index: 1000;
+            color: #ffffff;
+            list-style: none;
+            padding: 5px 0;
+            margin: 0;
+        }
+
+        .context-menu li {
+            padding: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .context-menu li:hover {
+            background: #00ff00;
+            color: #000000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="side-panel">
+            <h2>Chat List</h2>
+            <ul id="chat-list" class="chat-list">
+                <!-- Chat list items will be added here -->
+            </ul>
+            <button onclick="createNewChat()">Create New Chat</button>
+        </div>
+        <div class="chat-panel">
+           <h1>Leo Assistant <img src="" alt="" class="leo-image"></h1>
+            <div id="chatbox">
+                <!-- Chat messages will appear here -->
+            </div>
+            <div class="button-container">
+                <input type="text" id="user-input" placeholder="Type your message...">
+                <button onclick="sendMessage()">Send</button>
+                <button class="clear-btn" onclick="clearChat()">Clear</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Context Menu -->
+    <ul id="context-menu" class="context-menu">
+        <li onclick="deleteChat()">Delete Chat</li>
+    </ul>
+
+    <script>
+        let chats = {};
+        let currentChatId = null;
+        let selectedChatId = null;
+
+        function createNewChat() {
+            const chatName = prompt('Enter a name for the new chat:');
+            if (!chatName) return;  // Do nothing if name is empty
+
+            const chatId = `chat_${Date.now()}`;
+            chats[chatId] = [];
+            currentChatId = chatId;
+            document.getElementById('chatbox').innerHTML = '';  // Clear chatbox for new chat
+            addChatToList(chatId, chatName);
+            alert(`New chat created with name "${chatName}" and ID: ${chatId}`);
+        }
+
+        function addChatToList(chatId, chatName) {
+            const chatList = document.getElementById('chat-list');
+            const listItem = document.createElement('li');
+            listItem.className = 'chat-list-item';
+            listItem.dataset.chatId = chatId;
+            listItem.textContent = chatName;
+            listItem.onclick = function() {
+                switchChat(chatId);
+            };
+            listItem.oncontextmenu = function(event) {
+                event.preventDefault();
+                showContextMenu(event, chatId);
+            };
+            chatList.appendChild(listItem);
+        }
+
+        function switchChat(chatId) {
+            if (!chats[chatId]) return;
+            currentChatId = chatId;
+            loadChat(chatId);
+        }
+
+        function loadChat(chatId) {
+            const chatbox = document.getElementById('chatbox');
+            chatbox.innerHTML = '';  // Clear current chatbox
+            chats[chatId].forEach(msg => {
+                const p = document.createElement('p');
+                p.classList.add(msg.sender);
+                p.textContent = msg.text;
+                chatbox.appendChild(p);
+            });
+        }
+
+        async function sendMessage() {
+            const userInput = document.getElementById('user-input').value;
+
+            if (userInput.trim() === '' || !currentChatId) return;  // Do nothing if input is empty or no chat is selected
+
+            // Add user's message to chatbox and save to current chat
+            const chatbox = document.getElementById('chatbox');
+            const userMessage = document.createElement('p');
+            userMessage.classList.add('user');
+            userMessage.textContent = userInput;
+            chatbox.appendChild(userMessage);
+            chats[currentChatId].push({ sender: 'user', text: userInput });
+
+            // Clear input field
+            document.getElementById('user-input').value = '';
+
+            // Send the message to the Flask backend
+            const response = await fetch('/chatgpt', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: userInput
+                })
+            });
+
+            const data = await response.json();
+
+            // Add Leo's response to the chatbox and save to current chat
+            const leoMessage = document.createElement('p');
+            leoMessage.classList.add('leo');
+            leoMessage.textContent = "Leo: " + data.reply;
+            chatbox.appendChild(leoMessage);
+            chats[currentChatId].push({ sender: 'leo', text: "Leo: " + data.reply });
+
+            // Scroll to the bottom of the chatbox
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+
+        function clearChat() {
+            const chatbox = document.getElementById('chatbox');
+            chatbox.innerHTML = '';  // Clear all messages in chatbox
+        }
+
+        function showContextMenu(event, chatId) {
+            const contextMenu = document.getElementById('context-menu');
+            contextMenu.style.display = 'block';
+            contextMenu.style.left = `${event.pageX}px`;
+            contextMenu.style.top = `${event.pageY}px`;
+            selectedChatId = chatId;
+        }
+
+        function hideContextMenu() {
+            const contextMenu = document.getElementById('context-menu');
+            contextMenu.style.display = 'none';
+        }
+
+        function deleteChat() {
+            if (!selectedChatId) return;
+            const chatList = document.getElementById('chat-list');
+            const chatItem = chatList.querySelector(`li[data-chat-id="${selectedChatId}"]`);
+            if (chatItem) {
+                chatList.removeChild(chatItem);
+            }
+            delete chats[selectedChatId];
+            if (currentChatId === selectedChatId) {
+                currentChatId = null;
+                document.getElementById('chatbox').innerHTML = '';  // Clear chatbox if current chat was deleted
+            }
+            hideContextMenu();
+        }
+
+        // Hide context menu when clicking outside of it
+        document.addEventListener('click', function(event) {
+            const contextMenu = document.getElementById('context-menu');
+            if (event.target !== contextMenu && !contextMenu.contains(event.target)) {
+                hideContextMenu();
+            }
+        });
+
+        // Handle Enter key press to send message
+        document.getElementById('user-input').addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();  // Prevent default action (form submission, etc.)
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
